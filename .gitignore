@@ -1,0 +1,5 @@
+myenv/
+.dist
+__pycache__
+.vscode
+*.zip

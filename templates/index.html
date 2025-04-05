@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fraud Detection</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            text-align: center;
+        }
+        form {
+            display: inline-block;
+            text-align: left;
+            background: #f4f4f4;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin: 8px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            background: #28a745;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #218838;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Fraud Detection System</h1>
+    
+    <form id="fraudForm">
+        <label>Amount:</label>
+        <input type="number" id="amount" required>
+
+        <label>Latitude:</label>
+        <input type="number" step="any" id="latitude" required>
+
+        <label>Longitude:</label>
+        <input type="number" step="any" id="longitude" required>
+
+        <label>Avg Transaction Amount:</label>
+        <input type="number" id="avgAmount" required>
+
+        <label>Transaction Frequency:</label>
+        <input type="number" id="frequency" required>
+
+        <label>Failed Attempts:</label>
+        <input type="number" id="failedAttempts" required>
+
+        <label>Hour of Transaction:</label>
+        <input type="number" id="hour" min="0" max="23" required>
+
+        <label>Day of Week:</label>
+        <input type="number" id="dayOfWeek" min="0" max="6" required>
+
+        <label>Amount Ratio:</label>
+        <input type="number" step="any" id="amountRatio" required>
+
+        <label>Merchant Category:</label>
+        <select id="merchantCategory">
+            <option value="Shopping">Shopping</option>
+            <option value="Food">Food</option>
+            <option value="Travel">Travel</option>
+        </select>
+
+        <label>Transaction Type:</label>
+        <select id="transactionType">
+            <option value="Online">Online</option>
+            <option value="Offline">Offline</option>
+        </select>
+
+        <label>Bank Name:</label>
+        <input type="text" id="bankName" required>
+
+        <label>Unusual Location:</label>
+        <select id="unusualLocation">
+            <option value="0">No</option>
+            <option value="1">Yes</option>
+        </select>
+
+        <label>Unusual Amount:</label>
+        <select id="unusualAmount">
+            <option value="0">No</option>
+            <option value="1">Yes</option>
+        </select>
+
+        <label>New Device:</label>
+        <select id="newDevice">
+            <option value="0">No</option>
+            <option value="1">Yes</option>
+        </select>
+
+        <button type="submit">Check Fraud</button>
+    </form>
+
+    <div class="result" id="result"></div>
+
+    <script>
+        document.getElementById("fraudForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
+
+            const data = {
+                Amount: parseFloat(document.getElementById("amount").value),
+                Latitude: parseFloat(document.getElementById("latitude").value),
+                Longitude: parseFloat(document.getElementById("longitude").value),
+                AvgTransactionAmount: parseFloat(document.getElementById("avgAmount").value),
+                TransactionFrequency: parseInt(document.getElementById("frequency").value),
+                FailedAttempts: parseInt(document.getElementById("failedAttempts").value),
+                Hour: parseInt(document.getElementById("hour").value),
+                DayOfWeek: parseInt(document.getElementById("dayOfWeek").value),
+                AmountRatio: parseFloat(document.getElementById("amountRatio").value),
+                MerchantCategory: document.getElementById("merchantCategory").value,
+                TransactionType: document.getElementById("transactionType").value,
+                BankName: document.getElementById("bankName").value,
+                UnusualLocation: parseInt(document.getElementById("unusualLocation").value),
+                UnusualAmount: parseInt(document.getElementById("unusualAmount").value),
+                NewDevice: parseInt(document.getElementById("newDevice").value)
+            };
+
+            const response = await fetch("/predict", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+            document.getElementById("result").innerHTML = `
+                Fraud Probability: ${result.fraud_probability * 100}%<br>
+                Fraudulent Transaction: ${result.is_fraud ? "Yes (Fraud Detected)" : "No (Legit Transaction)"}
+            `;
+        });
+    </script>
+
+</body>
+</html>
